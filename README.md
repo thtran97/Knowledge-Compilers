@@ -2,6 +2,7 @@
 
 This repo is my Python-reimplementation of some known compilers.
 
+---
 
 ### Implemented compilers 
 
@@ -51,6 +52,8 @@ The returned d-DNNNF is shown as below:
 
 ***In progress***
 
+---
+
 ### Analysis
 
 In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved version of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
@@ -61,6 +64,8 @@ Certainly, my implementation is still quite complex and dumb :) Some todo works 
 
 - [ ] Reorganize main classes: dtree, dnnf, compiler, queries, transformations, etc.
 - [ ] Certainly, simplify code as possible :) 
+
+---
 
 ### References
 
