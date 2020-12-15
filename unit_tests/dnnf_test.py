@@ -82,3 +82,7 @@ models = dnnf_compiler.enumerate_models(dnnf)
 for x in models:
     print(x)
 
+print('Enumerating all models with smooth version ....')
+models = dnnf_compiler.enumerate_models(dnnf_smooth)
+for x in models:
+    print(x)
