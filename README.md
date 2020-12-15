@@ -7,6 +7,8 @@ This repo is my Python-reimplementation of some known compilers.
 
 #### 1. cnf2ddnnf
 
+Goal: Mimic the **c2d** program and try to reimplement it from scratch in python. A [full description of **c2d**](http://reasoning.cs.ucla.edu/c2d/) can be found at [6]. 
+
 - [X] dtree compiler : Compile a very simple and naive dtree from clausal form
 - [X] d-DNNF compiler : Compiler to d-DNNF based on a dtree 
 
@@ -18,12 +20,47 @@ This repo is my Python-reimplementation of some known compilers.
     - [x] Recursive compiler 
     - [x] Key and cache ?
 
-In this first version, I reimplemented a very simple complier which compile from CNF to d-DNNF. This implementations is based on the work described in [1]. 
+In this first version, I reimplemented a very simple complier which compile from CNF to d-DNNF. This implementations is based on the work described in [1]. However, it is still a very simple version and there exists many points needed to improve. 
+
+Some queries and transformations are implemented :
+
+- [x] Conditionning/Literal-cojoin
+- [x] SAT? 
+- [ ] Entailment (based on SAT query)
+- [x] Projecting
+- [x] Min cardinality
+- [x] Minimize (requires smooth property)
+- [x] Enumerate models
+
+Further (naive, because I am not sure about its correctness) transformations on compiled d-DNNF are:
+
+- [x] Smooth
+- [x] Simplify
+
+***Note***: to export a png file, execute this command by declaring a dot file as input
+
+```
+dot -Tpng ./instances/my_dnnf.dot > ./instances/my_dnnf.png
+```
+
+The returned d-DNNNF is shown as below:
+
+![png](./instances/my_dnnf.png)
 
 #### 2. cnf2obdd
 
 ***In progress***
 
+### Analysis
+
+In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved version of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
+
+In terms of d-DNNF implementation, I constrained childrens of OR-node and AND-node to 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
+
+Certainly, my implementation is still quite complex and dumb :) Some todo works are: 
+
+- [ ] Reorganize main classes: dtree, dnnf, compiler, queries, transformations, etc.
+- [ ] Certainly, simplify code as possible :) 
 
 ### References
 
@@ -36,3 +73,5 @@ In this first version, I reimplemented a very simple complier which compile from
 - [4] A. Darwiche, “A compiler for deterministic, decomposable negation normal form,” Proc. Natl. Conf. Artif. Intell., pp. 627–634, 2002.
 
 - [5] J. Huang and A. Darwiche, “Using DPLL for efficient OBDD construction,” Proc. ofthe Seventh Int. Conf. Theory Appl. ofSatisfiability Test., 2004, doi: 10.1007/11527695_13.
+
+- [6] A. Darwiche, “The c2d Compiler User Manual,” pp. 1–11, 2005. [Full description of c2d](http://reasoning.cs.ucla.edu/c2d/)
