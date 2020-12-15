@@ -1,3 +1,4 @@
+import numpy as np
 import copy
 
 class DNF_Node:
@@ -8,17 +9,22 @@ class DNF_Node:
         self.right_child = right_child 
         self.literal = literal
         self.conflict_atom = conflict_atom
-
+        
         self.explore_id = None
+
+        self.atoms = None
+        self.models = None
 
         if self.type == 'L':
             assert self.literal is not None
             assert self.left_child is None
             assert self.right_child is None
+            self.atoms = [abs(literal)]
         elif self.type == 'O' or self.type == 'A':
             assert self.literal is None
             assert self.left_child is not None 
             assert self.right_child is not None
+            self.atoms = list(set(self.left_child.atoms).union(self.right_child.atoms))
 
     def count_node(self, current_id):
         if self.explore_id is not None:
@@ -72,11 +78,37 @@ class DNF_Node:
         self.explore_id = current_id
         return current_id + 1
 
+    def reset(self):
+        self.explore_id = None
+        if self.type != 'L':
+            self.left_child.reset()
+            self.right_child.reset()
+    # '''
+    # Queries and transformation
+    # '''
+    # def conditioning(self, instanciation):
+    #     if self.explore_id != 1:
+    #         assert type(self.literal) is not bool
+    #         if self.type == 'L':
+    #             if self.literal in instanciation:
+    #                 self.literal = True
+    #             elif -self.literal in instanciation:
+    #                 self.literal = False
+    #         else:
+    #             self.left_child.conditioning(instanciation)
+    #             self.right_child.conditioning(instanciation)
+    #         self.explore_id = 1
+
+    
+    # def conjoin(self, instanciation):
+    #     return DNF_Node(node_type='A', left_child=self.conditioning(instanciation), right_child=create_term_node(term=instanciation))
+
 class DNNF_Compiler:
     def __init__(self, dtree):
         self.dtree = dtree 
         self.cache = {}
         self.cache_lit = {}
+        self.ddnnf = None
 
     '''
     These functions take a dtree as input
@@ -272,5 +304,186 @@ class DNNF_Compiler:
             return self.compose(node_type='A', list_tree=[term_node, t_node])
 
     def compile(self):
-        return self.cnf2ddnnf(self.dtree)
+        self.ddnnf = self.cnf2ddnnf(self.dtree)
+        return copy.deepcopy(self.ddnnf)
+
+    '''
+    Queries and transformation
+    '''
+
+    def conditioning(self, dnnf, instanciation):
+        if dnnf.explore_id is None:
+            assert type(dnnf.literal) is not bool
+            if dnnf.type == 'L':
+                if dnnf.literal in instanciation:
+                    dnnf.literal = True
+                elif -dnnf.literal in instanciation:
+                    dnnf.literal = False
+            else:
+                dnnf.left_child = self.conditioning(dnnf.left_child, instanciation)
+                dnnf.right_child = self.conditioning(dnnf.right_child, instanciation)
+            dnnf.explore_id = 1
+        return dnnf
+
+    def conjoin(self, dnnf, instanciation):
+        return DNF_Node(node_type='A', left_child=self.simplify(self.conditioning(dnnf, instanciation)), right_child=self.create_term_node(instanciation))
+
+    def simplify(self, dnnf): 
+        if dnnf.type == 'L':
+            return dnnf            
+        elif dnnf.type == 'O':
+            dnnf.left_child = self.simplify(dnnf.left_child)
+            dnnf.right_child = self.simplify(dnnf.right_child)
+            if dnnf.left_child.literal == True:
+                return dnnf.left_child
+            elif dnnf.right_child.literal == True:
+                return dnnf.right_child
+            elif dnnf.left_child.literal == False:
+                return dnnf.right_child
+            elif dnnf.right_child.literal == False:
+                return dnnf.left_child
+            else:
+                return dnnf
+        elif dnnf.type == 'A':
+            dnnf.left_child = self.simplify(dnnf.left_child)
+            dnnf.right_child = self.simplify(dnnf.right_child)
+            if dnnf.left_child.literal == True and dnnf.right_child.literal == True:
+                return dnnf.left_child
+            elif dnnf.left_child.literal == False:
+                return dnnf.left_child
+            elif dnnf.right_child.literal == False:
+                return dnnf.right_child
+            else:
+                return dnnf
+
+    def is_sat(self, dnnf):
+        if dnnf.type == 'L':
+            if dnnf.literal == False:
+                return False
+            else: 
+                return True
+
+        elif dnnf.type == 'O':
+            return self.is_sat(dnnf.left_child) or self.is_sat(dnnf.right_child)
+
+        elif dnnf.type == 'A':
+            return self.is_sat(dnnf.left_child) and self.is_sat(dnnf.right_child)
     
+    def project(self, dnnf, atoms):
+        if dnnf.type == 'L':
+            if type(dnnf.literal) is not bool:
+                if abs(dnnf.literal) not in atoms:
+                    dnnf.literal = True
+        else: 
+            dnnf.left_child = self.project(dnnf.left_child, atoms)
+            dnnf.right_child = self.project(dnnf.right_child, atoms)
+        return dnnf
+
+    def MCard(self, dnnf):
+        if dnnf.type ==  'L':
+            if type(dnnf.literal) is bool:
+                if dnnf.literal == True:
+                    return 0
+                else:
+                    return np.inf
+            else:
+                if dnnf.literal > 0:
+                    return 0
+                else: 
+                    return 1
+        elif dnnf.type == 'O':
+            return min(self.MCard(dnnf.left_child), self.MCard(dnnf.right_child))
+        elif dnnf.type == 'A':
+            return self.MCard(dnnf.left_child) + self.MCard(dnnf.right_child)
+
+    def minimize(self, dnnf):
+        if dnnf.type == 'L':
+            return dnnf
+        elif dnnf.type == 'A':
+            dnnf.left_child = self.minimize(dnnf.left_child)
+            dnnf.right_child = self.minimize(dnnf.right_child)
+            if dnnf.left_child is None:
+                return dnnf.right_child
+            elif dnnf.right_child is None:
+                return dnnf.left_child
+            return dnnf
+        elif dnnf.type == 'O':
+            mcard = self.MCard(dnnf)
+            left_mcard = self.MCard(dnnf.left_child)
+            right_mcard = self.MCard(dnnf.right_child)
+            if left_mcard != mcard and right_mcard != mcard:
+                return None
+            elif left_mcard == mcard and right_mcard != mcard:
+                return self.minimize(dnnf.left_child)
+            elif left_mcard != mcard and right_mcard == mcard:
+                return self.minimize(dnnf.right_child)
+            else:
+                dnnf.left_child = self.minimize(dnnf.left_child)
+                dnnf.right_child = self.minimize(dnnf.right_child)
+                return dnnf
+
+    def create_trivial_node(self, atom):
+        if atom in self.cache_lit:
+            p = self.cache_lit[atom]
+        else:
+            p = DNF_Node('L',literal=atom)
+            self.cache_lit[atom] = p
+        if -atom in self.cache_lit:
+            n = self.cache_lit[-atom]
+        else:
+            n = DNF_Node('L',literal= -atom)
+            self.cache_lit[-atom] = n
+        return DNF_Node('O', left_child=p, right_child=n, conflict_atom=abs(atom))
+
+    def smooth(self, dnnf):
+        if dnnf.type == 'L':
+            pass
+        elif dnnf.type == 'A':
+            dnnf.left_child = self.smooth(dnnf.left_child)
+            dnnf.right_child = self.smooth(dnnf.right_child)
+        elif dnnf.type == 'O':    
+            atoms = dnnf.atoms
+            not_atoms_left = list(set(dnnf.left_child.atoms)^set(atoms))
+            not_atoms_right = list(set(dnnf.right_child.atoms)^set(atoms))
+            if len(not_atoms_left) > 0:
+                print('Left node is not smooth')
+                trivial_nodes = [self.create_trivial_node(l) for l in not_atoms_left]
+                dnnf.left_child = self.compose(node_type='A', list_tree=[dnnf.left_child]+trivial_nodes)
+                dnnf.left_child.atoms = atoms
+            if len(not_atoms_right) > 0:
+                print('Right node is not smooth')
+                trivial_nodes = [self.create_trivial_node(l) for l in not_atoms_right]
+                dnnf.right_child = self.compose(node_type='A', list_tree=[dnnf.right_child]+trivial_nodes)
+                dnnf.right_child.atoms = atoms
+            dnnf.left_child = self.smooth(dnnf.left_child)
+            dnnf.right_child = self.smooth(dnnf.right_child)
+        return dnnf    
+
+    def enumerate_models(self, dnnf):
+        if dnnf.type == 'L':
+            if type(dnnf.literal) is bool:
+                if dnnf.literal == True:
+                    return [[]]
+                else:
+                    return []
+            else:
+                return [[dnnf.literal]]
+        elif dnnf.type == 'O':
+            return self.union_models(self.enumerate_models(dnnf.left_child), self.enumerate_models(dnnf.right_child))
+        elif dnnf.type == 'A':
+            return self.multiply_models(self.enumerate_models(dnnf.left_child), self.enumerate_models(dnnf.right_child))
+
+    def union_models(self, l1, l2):
+        l = l1.copy()
+        for item in l2:
+            if item not in l1:
+                l.append(item)
+        return l
+
+    def multiply_models(self, l1, l2):
+        l = []
+        for item_A in l1:
+            for item_B in l2:
+                l.append(list(set(item_A).union(item_B)))
+        return l
+

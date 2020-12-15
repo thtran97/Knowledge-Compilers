@@ -5,7 +5,7 @@ def export_nnf_file(output_dnnf_file, nnf):
     aux = copy.deepcopy(nnf)
     nb_nodes = aux.count_node(0)
     nb_edges = aux.count_edge()
-    nb_vars = len(aux.collect_var())
+    nb_vars = max(aux.collect_var())
     output.write('nnf {} {} {}\n'.format(nb_nodes, nb_edges, nb_vars))  
     output.close()
     aux = copy.deepcopy(nnf)
@@ -39,7 +39,7 @@ def export_nnf_dot(input_nnf_file):
         if line.startswith('A'):
             nb_childs = line.split()[1]
             childs = line.split()[2:]
-            print('And-node ({0} childs) : {1}'.format(nb_childs, childs))
+            # print('And-node ({0} childs) : {1}'.format(nb_childs, childs))
             output.write('      AND{} [shape=square];'.format(len(node)))
             node.append('AND{}'.format(len(node)))
             for child in childs:
@@ -48,9 +48,9 @@ def export_nnf_dot(input_nnf_file):
             ignore, nb_childs = line.split()[1:3]
             childs = line.split()[3:]
             if int(ignore) > 0:
-                assert int(ignore) <= int(nb_vars)
+                # assert int(ignore) <= int(nb_vars)
                 assert int(nb_childs) == 2
-                print('Or-node ({0} childs) : {1}'.format(nb_childs, childs))
+                # print('Or-node ({0} childs) : {1}'.format(nb_childs, childs))
                 output.write('      OR{} [shape=diamond];'.format(len(node)))
                 node.append('OR{}'.format(len(node)))
                 for child in childs:
