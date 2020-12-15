@@ -3,11 +3,11 @@
 This repo is my Python-reimplementation of some known compilers.
 
 
-### Core functions 
+### Implemented compilers 
 
-#### 1. cnf2ddnnf
+#### 1. cnf2ddnnf :white_check_mark:
 
-Goal: Mimic the **c2d** program and try to reimplement it from scratch in python. A [full description of **c2d**](http://reasoning.cs.ucla.edu/c2d/) can be found at [6]. 
+***Goal:*** Mimic the *c2d* program and try to reimplement it from scratch in python. A full description of *c2d* can be found at [6]. 
 
 - [X] dtree compiler : Compile a very simple and naive dtree from clausal form
 - [X] d-DNNF compiler : Compiler to d-DNNF based on a dtree 
@@ -47,7 +47,7 @@ The returned d-DNNNF is shown as below:
 
 ![png](./instances/my_dnnf.png)
 
-#### 2. cnf2obdd
+#### 2. cnf2obdd :x:
 
 ***In progress***
 
@@ -55,7 +55,7 @@ The returned d-DNNNF is shown as below:
 
 In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved version of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
 
-In terms of d-DNNF implementation, I constrained childrens of OR-node and AND-node to 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
+In terms of d-DNNF compiler, I constrained childrens of OR-node and AND-node to 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
 
 Certainly, my implementation is still quite complex and dumb :) Some todo works are: 
 
