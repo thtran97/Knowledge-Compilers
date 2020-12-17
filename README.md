@@ -44,17 +44,16 @@ Further (naive, because I am not sure about its correctness) transformations on 
 dot -Tpng ./instances/my_dnnf.dot > ./instances/my_dnnf.png
 ```
 
-The returned d-DNNNF (of *foo.cnf*) is shown as below:
+The returned d-DNNNF (of *./instances/foo.cnf*) is shown as below:
 
 ![png](./instances/my_dnnf.png)
 
-#### 2. cnf2obdd :x:
+#### 2. cnf2obdd :white_check_mark:
 
-***In progress***
+***Goal:*** Compile a CNF into OBDD (ordered binary decision diagram) form. This implementation is based on the (recursive) *Algorithm 2 & 3* described in the work of J. Huang and A. Darwiche (2014s) [5].  
+In which, the key point is to used a cache for storing decision nodes to save computational cost. This key can be based on either cutset or separator. More details in [5].
 
-- [ ] Key & cache
-
-The returned OBDD (of *toto.cnf*) is shown as below:
+The returned OBDD (of *./instances/toto.cnf*) is shown as below:
 
 ![png](./instances/toto.png)
 
@@ -62,9 +61,11 @@ The returned OBDD (of *toto.cnf*) is shown as below:
 
 ### Analysis
 
-In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved versions of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
+- In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved versions of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
 
-In terms of d-DNNF compiler, I constrained OR-node and AND-node only with 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
+- With d-DNNF compiler, I constrained OR-node and AND-node only with 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
+
+- OBDD compiler: I finished a recursive version as described in [5]. The iterative implementation based on DPLL procedure is still in progress. In further versions, we should consider some efficient mechanisms of modern SAT solvers such as unit propagation, non-chronological backtracking, watched literals, conflict-directed backtracking or no-good learning.
 
 Certainly, my implementation is still quite complex and dumb :) Some todo works are: 
 
