@@ -44,7 +44,7 @@ Further (naive, because I am not sure about its correctness) transformations on 
 dot -Tpng ./instances/my_dnnf.dot > ./instances/my_dnnf.png
 ```
 
-The returned d-DNNNF is shown as below:
+The returned d-DNNNF (of *foo.cnf*) is shown as below:
 
 ![png](./instances/my_dnnf.png)
 
@@ -54,7 +54,7 @@ The returned d-DNNNF is shown as below:
 
 - [ ] Key & cache
 
-The returned OBDD is shown as below:
+The returned OBDD (of *toto.cnf*) is shown as below:
 
 ![png](./instances/toto.png)
 
