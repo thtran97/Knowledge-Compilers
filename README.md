@@ -52,6 +52,12 @@ The returned d-DNNNF is shown as below:
 
 ***In progress***
 
+- [ ] Key & cache
+
+The returned OBDD is shown as below:
+
+![png](./instances/toto.png)
+
 ---
 
 ### Analysis
