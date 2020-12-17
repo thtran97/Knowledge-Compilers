@@ -50,7 +50,7 @@ The returned d-DNNNF (of *./instances/foo.cnf*) is shown as below:
 
 #### 2. cnf2obdd :white_check_mark:
 
-***Goal:*** Compile a CNF into OBDD (ordered binary decision diagram) form. This implementation is based on the (recursive) *Algorithm 2 & 3* described in the work of J. Huang and A. Darwiche (2014s) [5].  
+***Goal:*** Compile a CNF into OBDD (ordered binary decision diagram) form. This implementation is inspired by the (recursive) *Algorithm 2 & 3* described in the conference paper of J. Huang and A. Darwiche (2014s) [5].  
 In which, the key point is to used a cache for storing decision nodes to save computational cost. This key can be based on either cutset or separator. More details in [5].
 
 The returned OBDD (of *./instances/toto.cnf*) is shown as below:
@@ -65,7 +65,7 @@ The returned OBDD (of *./instances/toto.cnf*) is shown as below:
 
 - With d-DNNF compiler, I constrained OR-node and AND-node only with 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
 
-- OBDD compiler: I finished a recursive version as described in [5]. The iterative implementation based on DPLL procedure is still in progress. In further versions, we should consider some efficient mechanisms of modern SAT solvers such as unit propagation, non-chronological backtracking, watched literals, conflict-directed backtracking or no-good learning.
+- OBDD compiler: I finished a recursive version as described in [5]. The iterative implementation based on DPLL procedure is still in progress. In further versions, we should consider some efficient mechanisms of modern SAT solvers such as unit propagation, non-chronological backtracking, watched literals, conflict-directed backtracking or no-good learning. A more complete version of this compiler can be found [here](http://www.disc.lab.uec.ac.jp/toda/code/cnf2obdd.html).  
 
 Certainly, my implementation is still quite complex and dumb :) Some todo works are: 
 
