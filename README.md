@@ -1,6 +1,6 @@
 # Knowledge compilers
 
-This repo is my Python-reimplementation of some known compilers.
+This repo is my Python-reimplementation of some known compilers: which may compile a clausal form (CNF) into a compiled form based on subsets of Negation Norm Form (NNF), for example d-DNNF or OBDD. 
 
 ---
 
@@ -56,14 +56,14 @@ The returned d-DNNNF is shown as below:
 
 ### Analysis
 
-In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved version of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
+In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved versions of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
 
-In terms of d-DNNF compiler, I constrained childrens of OR-node and AND-node to 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
+In terms of d-DNNF compiler, I constrained OR-node and AND-node only with 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
 
 Certainly, my implementation is still quite complex and dumb :) Some todo works are: 
 
 - [ ] Reorganize main classes: dtree, dnnf, compiler, queries, transformations, etc.
-- [ ] Certainly, simplify code as possible :) 
+- [ ] Simplify code as possible :) 
 
 ---
 
