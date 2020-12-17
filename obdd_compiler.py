@@ -1,4 +1,6 @@
 import copy
+import itertools
+
 class BDD:
     def __init__(self, var, low, high):
         self.var = var
@@ -50,10 +52,16 @@ class BDD:
         return rank
 
 class BDD_Compiler:
-    def __init__(self, n_vars):
+    def __init__(self, n_vars, clausal_form):
+        self.clausal_form = clausal_form
         self.n_vars = n_vars
         self.unique = {}
         self.cache = {}
+        for i in range(n_vars+1):
+            self.cache[i] = {}
+        self.cutset_cache = self._generate_cutset_cache()
+        self.separator_cache = self._generate_separator_cache()
+
         self.F_SINK = BDD(False, None, None)
         self.T_SINK = BDD(True, None, None)
 
@@ -61,7 +69,7 @@ class BDD_Compiler:
         modified = []
         for clause in formula:
             if literal in clause:
-                continue
+                modified.append([])
             elif -literal in clause:
                 c = [x for x in clause if x != -literal]
                 if len(c) == 0:
@@ -70,57 +78,106 @@ class BDD_Compiler:
             else:
                 modified.append(clause)
         return modified
+    
+    '''
+    Functions used for computing cutset key and cache
+    '''
+    def _compute_cutset(self, clausal_form, var):
+        cutset = []
+        for i, clause in enumerate(clausal_form):
+            if len(clause) == 0:
+                continue
+            atoms = [abs(l) for l in clause]
+            if min(atoms) <= var and var < max(atoms):
+                cutset.append(i)
+        return cutset 
 
-    # def unit_propagation(self, formula):
-    #     assignment = []
-    #     unit_clauses = [c for c in formula if len(c) == 1]
-    #     while len(unit_clauses) > 0:
-    #         unit = unit_clauses[0]
-    #         formula = self.bcp(formula, unit[0])
-    #         assignment += [unit[0]]
-    #         if formula == -1:
-    #             return -1, []
-    #         if not formula: 
-    #             return formula, assignment
-    #         unit_clauses = [c for c in formula if len(c) == 1]
-    #     return formula, assignment
+    def _generate_cutset_cache(self):
+        cutset_cache = []
+        print('CUTSET CACHE:')
+        for i in range(self.n_vars):
+            cutset_i = self._compute_cutset(self.clausal_form, i+1)
+            cutset_cache.append(cutset_i)
+            print('-cutset {} : {}'.format(i+1, cutset_i))
+        return cutset_cache
+        
+    def compute_cutset_key(self, clausal_form, var):
+        cutset_var = self.cutset_cache[var-1]
+        cutset_key = 0
+        for i, c in enumerate(cutset_var):
+            if len(clausal_form[c]) == 0:
+                cutset_key += 2**i
+        return cutset_key
 
-    def compute_key(self):
-        return 0
+    '''
+    Functions used for compute separator key and cache
+    '''
+    def _compute_separator(self, clausal_form, var):
+        sep = []
+        for ci in self.cutset_cache[var-1]:
+            sep += self.clausal_form[ci]
+        sep = [abs(l) for l in sep if abs(l) <= var]
+        sep = list(set(sep))
+        return sep 
 
+    def _generate_separator_cache(self):
+        sep_cache = []
+        print('SEPARATOR CACHE:')
+        for i in range(self.n_vars):
+            sep_i = self._compute_separator(self.clausal_form, i+1)
+            sep_cache.append(sep_i)
+            print('-sep {} : {}'.format(i+1, sep_i))
+        return sep_cache
+        
+    def compute_separator_key(self, clausal_form, var):
+        sep_var = self.separator_cache[var-1]
+        sep_key = 0
+        for v in sep_var:
+            sep_key += 2**v
+        return sep_key
+
+    '''
+
+    '''
     def get_nodes(self, var, low, high):
         if low == high:
             return low
         if (var, low, high) in self.unique: # and low == self.unique[i].low and high == self.unique[i].high:
+            # print('Unique node {} found!'.format(var))
             return self.unique[(var, low, high)]
         result = BDD(var, low, high)
         self.unique[(var, low, high)] = result
         return result
 
-    def cnf2obdd(self, clausal_form, i):
-        
+    def cnf2obdd(self, clausal_form, i, key_type='cutset'):
+        assert key_type == 'cutset' or  key_type == 'separator'
+
         if clausal_form == -1:
             return self.F_SINK
-        elif len(clausal_form) == 0:
+        elif len(list(itertools.chain(*clausal_form))) == 0:
             return self.T_SINK
         
         assert i <= self.n_vars+1
 
-        # key = self.compute_key()
-        # if key in self.cache:
-        #     return self.cache[key]
+        if key_type == 'cutset':
+            key = self.compute_cutset_key(clausal_form, i-1)
+        elif key_type == 'separator':
+            key = self.compute_separator_key(clausal_form, i-1)
 
-        # print('pick ', -i)
+        if key in self.cache[i-1]:
+            print('This node is already in cache {} with key {}'.format(i-1,key))
+            return self.cache[i-1][key]
+
         low = self.cnf2obdd(self.bcp(clausal_form, -i), i+1)
-        # print('pick ', i)
         high = self.cnf2obdd(self.bcp(clausal_form, i), i+1)
-        # print('We had result on node ', i)
         result = self.get_nodes(i, low, high)
-        # self.cache[key] = result
+        
+        self.cache[i-1][key] = result
+        # print('This node is stored in cache {} with key {}'.format(i-1, key))
         return result
 
-    def compile(self, clausal_form):
-        return self.cnf2obdd(clausal_form, 1)
+    def compile(self, key_type='cutset'):
+        return self.cnf2obdd(self.clausal_form, 1, key_type)
         
 
         
