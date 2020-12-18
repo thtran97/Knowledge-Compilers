@@ -63,7 +63,9 @@ The returned OBDD (of *./instances/toto.cnf*) is shown as below:
 
 - In terms of dtree compiler, I just made a very simple strategy as described in [2] without concerning about its treewidth. In order to minimize the treewidth (thus improve the performance of d-DNNF compiler), we should implement other involved versions of dtree gerenation. An interesting program for this procedure : [hmetis](http://www-users.cs.umn.edu/∼karypis/metis/hmetis/), which uses randomizes. More details on [6].
 
-- With d-DNNF compiler, I constrained OR-node and AND-node only with 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic! 
+- With d-DNNF compiler, I constrained OR-node and AND-node only with 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic!
+
+- Similar to c2d, **DSHARP**([open source](https://github.com/QuMuLab/dsharp)) also compiles a CNF to d-DNNF based on SharpSAT. More details in [7].
 
 - OBDD compiler: I finished a recursive version as described in [5]. The iterative implementation based on DPLL procedure is still in progress. In further versions, we should consider some efficient mechanisms of modern SAT solvers such as unit propagation, non-chronological backtracking, watched literals, conflict-directed backtracking or no-good learning. A more complete version of this compiler can be found [here](http://www.disc.lab.uec.ac.jp/toda/code/cnf2obdd.html).  
 
@@ -87,3 +89,5 @@ Certainly, my implementation is still quite complex and dumb :) Some todo works 
 - [5] J. Huang and A. Darwiche, “Using DPLL for efficient OBDD construction,” Proc. ofthe Seventh Int. Conf. Theory Appl. ofSatisfiability Test., 2004, doi: 10.1007/11527695_13.
 
 - [6] A. Darwiche, “The c2d Compiler User Manual,” pp. 1–11, 2005. [Full description of c2d](http://reasoning.cs.ucla.edu/c2d/)
+
+- [7] C. Muise, S. A. McIlraith, J. C. Beck, and E. I. Hsu, “DSHARP: Fast d-DNNF compilation with sharpSAT,” Lect. Notes Comput. Sci. (including Subser. Lect. Notes Artif. Intell. Lect. Notes Bioinformatics), vol. 7310 LNAI, no. May 2012, pp. 356–361, 2012, doi: 10.1007/978-3-642-30353-1_36.
