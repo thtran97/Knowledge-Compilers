@@ -4,7 +4,7 @@ This repo is my Python-reimplementation of some known compilers: which may compi
 
 ---
 
-### Implemented compilers 
+### Compilers 
 
 #### 1. cnf2ddnnf :white_check_mark:
 
@@ -56,6 +56,16 @@ In which, the key point is to used a cache for storing decision nodes to save co
 The returned OBDD (of *./instances/toto.cnf*) is shown as below:
 
 ![png](./instances/toto.png)
+
+#### 3. cnf2sdd :x:
+
+My reimplementation is ***in progress**.  
+
+***Related software***
+
+- [**SDD Package**](http://reasoning.cs.ucla.edu/sdd/) : an open-source system for constructing, manipulating and optimizing Sentential Decision Diagrams (SDDs), implemented in C language
+
+- [**PySDD**](https://github.com/wannesm/PySDD): a Python wrapper for interactive use of the SDD library 
 
 ---
 
