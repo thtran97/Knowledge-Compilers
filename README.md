@@ -59,9 +59,9 @@ The returned OBDD (of *./instances/toto.cnf*) is shown as below:
 
 #### 3. cnf2sdd :x:
 
-My reimplementation is ***in progress**.  
+My implementation is still ***in progress***.  
 
-***Related software***
+***Related software:***
 
 - [**SDD Package**](http://reasoning.cs.ucla.edu/sdd/) : an open-source system for constructing, manipulating and optimizing Sentential Decision Diagrams (SDDs), implemented in C language
 
