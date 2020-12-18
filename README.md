@@ -90,4 +90,4 @@ Certainly, my implementation is still quite complex and dumb :) Some todo works 
 
 - [6] A. Darwiche, “The c2d Compiler User Manual,” pp. 1–11, 2005. [Full description of c2d](http://reasoning.cs.ucla.edu/c2d/)
 
-- [7] C. Muise, S. A. McIlraith, J. C. Beck, and E. I. Hsu, “DSHARP: Fast d-DNNF compilation with sharpSAT,” Lect. Notes Comput. Sci. (including Subser. Lect. Notes Artif. Intell. Lect. Notes Bioinformatics), vol. 7310 LNAI, no. May 2012, pp. 356–361, 2012, doi: 10.1007/978-3-642-30353-1_36.
+- [7] C. Muise, S. A. McIlraith, J. C. Beck, and E. I. Hsu, “DSHARP: Fast d-DNNF compilation with sharpSAT,” in Canadian Conference on Artificial Intelligence, 2012, doi: 10.1007/978-3-642-30353-1_36.
