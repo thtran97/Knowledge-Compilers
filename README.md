@@ -65,13 +65,17 @@ The returned OBDD (of *./instances/toto.cnf*) is shown as below:
 
 - With d-DNNF compiler, I constrained OR-node and AND-node only with 2 children. We still can extend AND-node to more than 2 children. But with OR-node, 2 children should be better because we can define the conflict-literal on this OR-node => derterministic!
 
-- Similar to c2d, **DSHARP**([open source](https://github.com/QuMuLab/dsharp)) also compiles a CNF to d-DNNF based on SharpSAT. More details in [7].
+- Similar to c2d, **DSHARP** ([open source](https://github.com/QuMuLab/dsharp)) also compiles a CNF to d-DNNF based on SharpSAT. More details in [7].
 
 - OBDD compiler: I finished a recursive version as described in [5]. The iterative implementation based on DPLL procedure is still in progress. In further versions, we should consider some efficient mechanisms of modern SAT solvers such as unit propagation, non-chronological backtracking, watched literals, conflict-directed backtracking or no-good learning. A more complete version of this compiler can be found [here](http://www.disc.lab.uec.ac.jp/toda/code/cnf2obdd.html).  
 
 Certainly, my implementation is still quite complex and dumb :) Some todo works are: 
 
 - [ ] Reorganize main classes: dtree, dnnf, compiler, queries, transformations, etc.
+- [ ] Add other mechanisms in my implemented compilers
+- [ ] Add other compilers, queries and transformations
+- [ ] A benchmarking test for comparing their performances? 
+- [ ] Add main -> export python scripts
 - [ ] Simplify code as possible :) 
 
 ---
