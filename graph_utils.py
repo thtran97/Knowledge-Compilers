@@ -67,10 +67,12 @@ def export_nnf_dot(input_nnf_file):
 
     node = []
     leaf = []
+    nb_nodes, nb_edges, nb_vars = 0, 0, 0
     nb_vars = None
     for line in open(input_nnf_file):
         if line.startswith('nnf'):
-            nb_nodes, nb_edges, nb_vars = line.split()[1:4]
+            str_nb_nodes, str_nb_edges, str_nb_vars = line.split()[1:4]
+            nb_nodes, nb_edges, nb_vars = int(str_nb_nodes), int(str_nb_edges), int(str_nb_vars)
             print('Nb nodes: ', nb_nodes)
             print('Nb edges: ', nb_edges)
             print('Nb vars : ', nb_vars)
@@ -106,7 +108,7 @@ def export_nnf_dot(input_nnf_file):
     output.write('}\n')
     output.write('}')
     output.close()
-    return int(nb_nodes), int(nb_edges), int(nb_vars)
+    return nb_nodes, nb_edges, nb_vars
 
 
 def export_dot_from_bdd(output_bdd_file, bdd, nvars):

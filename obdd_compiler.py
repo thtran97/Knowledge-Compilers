@@ -137,7 +137,7 @@ class BDD_Compiler:
         return sep_key
 
     '''
-
+    Core functions 
     '''
     def get_nodes(self, var, low, high):
         if low == high:
