@@ -1,6 +1,6 @@
 # Knowledge compilers
 
-This repo is my Python-reimplementation of some known compilers: which may compile a clausal form (CNF) into a compiled form based on subsets of Negation Norm Form (NNF), for example d-DNNF or OBDD. 
+This repo is my Python-reimplementation of some known knowledge compilers: which may compile a clausal form (CNF) into a compiled form based on subsets of Negation Norm Form (NNF), for example d-DNNF or OBDD. The main objective is to understand the low-level implementation of these compilers and sevral basic queries.  
 
 ---
 
